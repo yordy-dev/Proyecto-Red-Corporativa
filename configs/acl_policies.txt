@@ -1,0 +1,61 @@
+ACL POLICIES - PROYECTO RED CORPORATIVA
+=====================================
+
+1. OBJETIVO
+-----------
+Implementar control de tráfico entre VLANs para:
+- Reducir superficie de ataque
+- Proteger áreas críticas
+- Aplicar principio de mínimo privilegio
+
+2. VLANs INVOLUCRADAS
+---------------------
+VLAN 10 - ADMINISTRACIÓN (10.10.10.0/24)
+VLAN 20 - VENTAS (10.10.20.0/24)
+VLAN 30 - INVITADOS (10.10.30.0/24)
+VLAN 40 - TI (10.10.40.0/24)
+
+3. POLÍTICAS DEFINIDAS
+---------------------
+
+ACL_VENTAS
+----------
+Origen: VLAN 20 (VENTAS)
+
+Reglas:
+- DENY acceso a VLAN 10 (ADMIN)
+- DENY acceso a VLAN 40 (TI)
+- PERMIT resto del tráfico
+
+Justificación:
+El área de Ventas no requiere acceso a sistemas administrativos ni de TI.
+Se reduce el riesgo de acceso no autorizado a información sensible.
+
+---
+
+ACL_INVITADOS
+-------------
+Origen: VLAN 30 (INVITADOS)
+
+Reglas:
+- DENY acceso a todas las VLANs internas (10.10.0.0/16)
+- PERMIT tráfico no interno (Internet)
+
+Justificación:
+La red de invitados debe estar completamente aislada de la red corporativa
+para evitar riesgos de seguridad.
+
+4. UBICACIÓN DE LAS ACL
+----------------------
+Las ACLs extendidas se aplican:
+- En el router R1
+- En dirección INBOUND
+- Sobre las subinterfaces correspondientes (router-on-a-stick)
+
+Esto permite filtrar el tráfico lo más cerca posible del origen.
+
+5. CONSIDERACIONES DE SEGURIDAD
+-------------------------------
+- Se utiliza "deny explícito + permit general"
+- El orden de las reglas es crítico
+- Las ACLs están documentadas para facilitar mantenimiento futuro
